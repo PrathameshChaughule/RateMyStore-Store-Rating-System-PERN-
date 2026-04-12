@@ -28,7 +28,7 @@ export const addUser = async (req, res) => {
     }
 }
 
-
+// delete user
 // DELETE /api/admin/user-delete/:id
 export const deleteUser = async (req, res) => {
   try {
@@ -103,6 +103,33 @@ export const updateUser = async (req, res) => {
   }
 };
 
+
+
+// get count
+// GET /api/admin/user-counts
+export const getUserStats = async (req, res) => {
+  try {
+    const result = await con.query(`
+      SELECT 
+        COUNT(*) AS total_users,
+        COUNT(*) FILTER (WHERE role = 'ADMIN') AS total_admins_role,
+        COUNT(*) FILTER (WHERE role = 'USER') AS total_users_role,
+        COUNT(*) FILTER (WHERE role = 'OWNER') AS total_owners_role
+      FROM users
+    `);
+
+    return res.status(200).json({
+      success: true,
+      data: result.rows[0]
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 
 // add Store

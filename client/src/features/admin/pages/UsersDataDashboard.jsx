@@ -8,7 +8,12 @@ const UsersDataDashboard = () => {
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("ALL");
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState({
+    name: "",
+    email: "",
+    address: "",
+    role: ""
+  });
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [users, setUsers] = useState([])
   const [stats, setStats] = useState([
@@ -49,18 +54,43 @@ const UsersDataDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await api.get('/api/admin/users', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        setUsers(data.data)
+        const res = await api.get('/api/admin/users', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const res1 = await api.get('/api/admin/user-counts', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const counts = res1.data.data;
+
+        setStats((prev) =>
+          prev.map((item) => {
+            if (item.label === "Total Users") {
+              return { ...item, value: counts.total_users };
+            }
+            if (item.label === "Normal Users") {
+              return { ...item, value: counts.total_users_role };
+            }
+            if (item.label === "Admin Users") {
+              return { ...item, value: counts.total_admins_role };
+            }
+            if (item.label === "Store Owners") {
+              return { ...item, value: counts.total_owners_role };
+            }
+            return item;
+          })
+        );
+
+        setUsers(res.data.data);
+
       } catch (error) {
-        toast.error(error?.response?.data?.message || error.message)
+        toast.error(error?.response?.data?.message || error.message);
       }
-    }
-    fetchData()
-  }, [])
+    };
+
+    fetchData();
+  }, [isAddOpen, isEditOpen]);
 
 
   // add user
@@ -94,7 +124,13 @@ const UsersDataDashboard = () => {
   });
 
   const handleEdit = (user) => {
-    setSelectedUser(user);
+    setSelectedUser({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      address: user.address,
+      role: user.role
+    });
     setIsEditOpen(true);
   };
 
@@ -102,7 +138,7 @@ const UsersDataDashboard = () => {
   // delete user
   const deleteUser = async (id) => {
     try {
-      const { data } = await api.get(`/api/admin/user-delete/${id}`, {
+      const { data } = await api.delete(`/api/admin/delete-user/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -112,6 +148,32 @@ const UsersDataDashboard = () => {
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message)
     }
+  }
+
+
+  // update user
+  const updateUser = async (e, id) => {
+    e.preventDefault()
+    try {
+      const { data } = await api.put(`/api/admin/user/${id}`, {
+        name: selectedUser.name,
+        email: selectedUser.email,
+        address: selectedUser.address,
+        role: selectedUser.role
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      toast.success(data.message)
+      setIsEditOpen(false)
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message)
+    }
+  }
+
+  const updateSelected = (e) => {
+    setSelectedUser({ ...selectedUser, [e.target.name]: e.target.value })
   }
 
 
@@ -286,7 +348,7 @@ const UsersDataDashboard = () => {
             </div>
 
             {/* FORM */}
-            <form className="space-y-5" >
+            <form className="space-y-5" onSubmit={(e) => updateUser(e, selectedUser.id)}>
 
               {/* GRID ROW */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -298,7 +360,9 @@ const UsersDataDashboard = () => {
                   </label>
                   <input
                     type="text"
-                    defaultValue={form?.name}
+                    name='name'
+                    onChange={(e) => updateSelected(e)}
+                    defaultValue={selectedUser?.name}
                     className="w-full mt-1 bg-slate-100 border-none rounded-xl px-4 py-3
               text-slate-800 placeholder:text-slate-400
               focus:ring-4 focus:ring-sky-500/10 focus:bg-white
@@ -314,7 +378,9 @@ const UsersDataDashboard = () => {
                   </label>
                   <input
                     type="email"
-                    defaultValue={form?.email}
+                    name='email'
+                    onChange={(e) => updateSelected(e)}
+                    defaultValue={selectedUser?.email}
                     className="w-full mt-1 bg-slate-100 border-none rounded-xl px-4 py-3
               text-slate-800 placeholder:text-slate-400
               focus:ring-4 focus:ring-sky-500/10 focus:bg-white
@@ -332,6 +398,8 @@ const UsersDataDashboard = () => {
                 </label>
                 <textarea
                   rows={3}
+                  name='address'
+                  onChange={(e) => updateSelected(e)}
                   defaultValue={selectedUser?.address}
                   className="w-full mt-1 bg-slate-100 border-none rounded-xl px-4 py-3
             text-slate-800 placeholder:text-slate-400
@@ -350,6 +418,8 @@ const UsersDataDashboard = () => {
 
                 <select
                   defaultValue={selectedUser?.role}
+                  name='role'
+                  onChange={(e) => updateSelected(e)}
                   className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3
             text-slate-800 focus:ring-4 focus:ring-sky-500/10
             transition-all outline-none text-sm"

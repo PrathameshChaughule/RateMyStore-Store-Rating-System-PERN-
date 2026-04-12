@@ -1,5 +1,5 @@
 import express from 'express'
-import { addStore, addUser, deleteUser, getStores, getUserById, getUsers, updateUser } from '../controllers/adminControllers.js'
+import { addStore, addUser, deleteUser, getStores, getUserById, getUsers, getUserStats, updateUser } from '../controllers/adminControllers.js'
 import { userValidation } from '../middleware/validations.js'
 import authMiddleware from '../middleware/authMiddleware.js'
 import roleMiddleware from '../middleware/roleMiddleware.js'
@@ -14,12 +14,17 @@ adminRouter.post('/user', userValidation, addUser)
 
 // update user
 // PUT /api/admin/user/:id
-adminRouter.post('/user/:id', userValidation, updateUser)
+adminRouter.put('/user/:id', updateUser)
 
 
 // delete user
-// DELETE /api/admin/user/:id
-adminRouter.post('/delete-user/:id', deleteUser)
+// DELETE /api/admin/delete-user/:id
+adminRouter.delete('/delete-user/:id', deleteUser)
+
+
+// get count
+// GET /api/admin/user-counts
+adminRouter.get('/user-counts', getUserStats)
 
 
 
