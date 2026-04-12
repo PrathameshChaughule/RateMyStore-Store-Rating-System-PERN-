@@ -1,98 +1,62 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FilterChips from './FilterChips'
 import StoreCard from './StoreCard';
+import toast from 'react-hot-toast';
+import api from '../../../configs/api';
+import StarRating from './StarRating';
 
 function StoreGrid() {
-    const [activeFilter, setActiveFilter] = useState("All Boutiques");
-    const STORES = [
-        {
-            id: 1,
-            name: "The Urban Archive",
-            address: "122 Mercer St, Soho, NY 10012",
-            category: "Lifestyle",
-            rating: "4.9",
-            offsetTop: false,
-            description:
-                "Experience artisan coffee in a botanical-inspired environment. Known for their cold brew and house-made pastries.",
-            image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuA8Uc0WapIcBnNS6p_I7WzrsATGKcm2FnNPqx9gBoBNEal5JTQzaZy0kd5-xptk519t_Ca36sXd2lQ-SODLSY2PemBhqF1bPvU-cjqTyXGdQt1Slb7tpZ21sBQ-Dw41tJK7vZwMVXjoyGi4WzRc5gt4jAd-nBzszESynmUg1w-CuYrW9PNw23bFcYlJpnMnD6OJacTWwsFny1Gloo5tlGXVUHWoTNDhFcFcpznkNRqiIzj1ZN5Ouu7Dd3B4A35RSlFmQOv4i_0dCGc",
-            imgH: "h-64",
-        },
-        {
-            id: 2,
-            name: "Glass & Grain",
-            address: "848 Washington Blvd, Venice, CA 90291",
-            category: "Homeware",
-            rating: "4.7",
-            offsetTop: true,
-            description:
-                "Experience artisan coffee in a botanical-inspired environment. Known for their cold brew and house-made pastries.",
-            image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuBPYZbM7TFJ8wkZ8CeRc8aL0aIFnF-K-OACOYzGUugN3JKmv3jZmJ1QtQki_lMAjy-XlCbDskrXv3S9D3inKTXisvDJPpLyt29haS1yctPQ-qmzC-qDJMEACIMDUCuGuL6uV43CIPcfQz-9v-5IHKdwNZYqwE-8VGwKT4V7rDjMwPHjdB9O8saKHhxAlH7If-w5ESojB-_dmjuMDvLB9mXq78mYZjMRSU2F7-3yPDPHnQ9CuqLDqgkduzQwMKxC-UHu_yYFoaPyzGI",
-            imgH: "h-56",
-        },
-        {
-            id: 3,
-            name: "The Daily Grind",
-            address: "412 Broadway, East Village, NY 10003",
-            category: "Coffee",
-            rating: "4.8",
-            offsetTop: false,
-            description:
-                "Experience artisan coffee in a botanical-inspired environment. Known for their cold brew and house-made pastries.",
-            image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuA68ZrAwUYR4vKDCEq__Jt3iDx9eh7eAZfAPHKNLNWC_SnnKeb-zSgaRslePGVQRSEgmLIfF9HV-dWJDm4J_9TGeyv7sqKlkd9UcWepSrAulIJ0OQZDq0yBs85XoiyQSj0nuVV3nA0JVAVoyeWWFgvDI2gDbhLguANeMTkOXW4cVIi2LBZvFknywmHtq3w8KERvXNEiAkiNFlFMf4oQS2QvZnOatDgW1qHzyqGzCSUN3_wlJy_bvV1Gzgp0hGs4onRAUCht9n3uxGo",
-            imgH: "h-72",
-        },
-        {
-            id: 4,
-            name: "Petals & Pots",
-            address: "77 Rose Ave, Venice, CA 90291",
-            category: "Floral",
-            rating: "4.5",
-            offsetTop: false,
-            description:
-                "Experience artisan coffee in a botanical-inspired environment. Known for their cold brew and house-made pastries.",
-            image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuCDXFqPCQBeQiSegF93Z0mqKOF8scD9AovIW-f_43ijXgmTh-DL7Mxc28fegimU6Enr8j5T8WlE6B2qOmKPjzGYaK1Pfr_v6iKEiyD23KXx1W8WjqvZLzx7whbH2Riw0zhgV8Eiz1UaFyvyIDk2FGT8BE9ak3QmDt7OSaOWkvVaMnEbCrjLmmkl78WES87S8OrdiMN4ZWLzPD-6z9DljgRNh2V3szFy5QIJ42N8Rx-nBZV9mf9E7DouzCC0pLz6YMl416Id_K_dBTQ",
-            imgH: "h-60",
-        },
-        {
-            id: 5,
-            name: "Old World Deli",
-            address: "14 Grand Central Pkwy, Queens, NY",
-            category: "Grocer",
-            rating: "4.6",
-            offsetTop: true,
-            negTop: true,
-            description:
-                "Experience artisan coffee in a botanical-inspired environment. Known for their cold brew and house-made pastries.",
-            image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuABfn7c5qTbbsn90hREfERMzTJ88y7wWFocIas65JHdFehCS8sD4H1ub9yOlqWyrlVj5VIdLkRsBhafwbV9p5-waB9wOiHD0cahnpxrxReziXTc-sLlzP0nqaGVRNCe4AO3NhJkZg2YaYPmolqYK64EzFdaT53pFAEzVf-fecLstdfTTBfngpNTPMI4YVb1uJvcaBkP8DQJpJE9qxGWvuYm5DGm0RK9lMy6B6-lvO2Tec7uVVa3tAsTePfrB9aJ00NqjMA7j6FtjsA",
-            imgH: "h-80",
-        },
-        {
-            id: 6,
-            name: "Spin Records",
-            address: "22 Vinyl Way, Seattle, WA",
-            category: "Music",
-            rating: "5.0",
-            offsetTop: false,
-            description:
-                "Experience artisan coffee in a botanical-inspired environment. Known for their cold brew and house-made pastries.",
-            image:
-                "https://lh3.googleusercontent.com/aida-public/AB6AXuCXamFfxcDhOtiIveMleyxvFa4MUscooyGMTVHachcnx6KHVaaGFqnzXndLyt1cHkk8YN41OnV8eGN7Tgg4rKHiN3n5XEt2Ngh3yjku3HI9dHteR9L7opYFvdFe4b-wqIgBFhWFfFg6cuQ8PpkYKw63M4Uf-m85rvPLBGMBKDWoO_XMvCJ4JIXl97aeHsiPVHUXzmyBDiJv7vdUfRZvoTbCIsYzTWDauCK0GHpRhP6UXOf--e6MKTUIh77MhHOPlChNMIct4drXL6o",
-            imgH: "h-64",
-        },
-    ];
+    const token = localStorage.getItem('token')
+    // const [activeFilter, setActiveFilter] = useState("All Boutiques");
+    const [selectedStore, setSelectedStore] = useState(null);
+    const [selectedRating, setSelectedRating] = useState(0);
+    const [stores, setStores] = useState([])
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await api.get('/api/user/stores', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setStores(res.data.data)
+                console.log(res.data.data)
+            } catch (error) {
+                toast.error(error?.response?.data?.message || error.message);
+            }
+        };
+
+        fetchData();
+    }, [selectedStore]);
+
+    const saveRating = async (storeId) => {
+        try {
+            await api.post(
+                "/api/user/ratings",
+                {
+                    store_id: storeId,
+                    rating: selectedRating,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            toast.success("Rating saved!");
+            setSelectedStore(null);
+        } catch (err) {
+            toast.error(err.response?.data?.message);
+        }
+    };
+
     return (
         <section>
-            <FilterChips active={activeFilter} onSelect={setActiveFilter} />
+            {/* <FilterChips active={activeFilter} onSelect={setActiveFilter} /> */}
 
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 items-start">
-                {STORES.map((store) => (
-                    <StoreCard key={store.id} store={store} />
+                {stores.map((store) => (
+                    <StoreCard key={store.id} store={store} setSelectedStore={setSelectedStore} setSelectedRating={setSelectedRating} />
                 ))}
             </div>
 
@@ -108,6 +72,139 @@ function StoreGrid() {
                     </span>
                 </button>
             </div>
+
+
+            {selectedStore && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+
+                    {/* BACKDROP */}
+                    <div
+                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                        onClick={() => setSelectedStore(null)}
+                    />
+
+                    {/* MODAL */}
+                    <div className="relative bg-white rounded-2xl w-[92%] max-w-4xl shadow-2xl overflow-hidden">
+
+                        {/* TOP IMAGE SECTION */}
+                        <div className="relative h-56 sm:h-64 w-full">
+                            <img
+                                src={selectedStore.image}
+                                alt={selectedStore.name}
+                                className="w-full h-full object-cover"
+                            />
+
+                            {/* DARK OVERLAY */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+
+                            {/* NAME ON IMAGE */}
+                            <div className="absolute bottom-4 left-6 text-white">
+                                <h2 className="text-2xl font-bold">
+                                    {selectedStore.name}
+                                </h2>
+
+                                <p className="text-sm text-white/80">
+                                    📍 {selectedStore.address}
+                                </p>
+                            </div>
+
+                            {/* AVERAGE RATING BADGE */}
+                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-amber-600 font-bold flex items-center gap-1">
+                                ★ {Number(selectedStore.rating || 0).toFixed(2)}
+                            </div>
+                        </div>
+
+                        {/* BODY */}
+                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            {/* LEFT SIDE - DETAILS */}
+                            <div>
+
+                                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                                    About Store
+                                </h3>
+
+                                <p className="text-slate-500 text-sm leading-relaxed">
+                                    {selectedStore.description}
+                                </p>
+
+                                <div className="mt-4 text-sm text-slate-500 space-y-1">
+                                    <p><span className="font-medium text-slate-700">Email:</span> {selectedStore.email}</p>
+                                    <p><span className="font-medium text-slate-700">Address:</span> {selectedStore.address}</p>
+                                </div>
+
+                                {/* STAR RATING INPUT */}
+                                <div className="mt-6">
+                                    <h4 className="font-semibold mb-2">Rate this store</h4>
+
+                                    <StarRating
+                                        selectedRating={selectedRating}
+                                        setSelectedRating={setSelectedRating}
+                                    />
+
+                                    <button
+                                        onClick={() => saveRating(selectedStore.id)}
+                                        className="mt-4 w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 rounded-lg transition"
+                                    >
+                                        Save Rating
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            {/* RIGHT SIDE - REVIEWS */}
+                            <div className="bg-slate-50 border border-slate-100 rounded-xl p-5">
+
+                                <h3 className="font-semibold text-slate-900 mb-3">
+                                    User Reviews ({selectedStore.rated_users?.length || 0})
+                                </h3>
+
+                                <div className="space-y-3 max-h-72 overflow-y-auto pr-2">
+
+                                    {selectedStore.rated_users?.length > 0 ? (
+                                        selectedStore.rated_users.map((u, i) => (
+                                            <div
+                                                key={i}
+                                                className="bg-white p-3 rounded-lg border border-slate-100 flex justify-between items-start"
+                                            >
+                                                <div>
+                                                    <p className="text-sm font-medium text-slate-900">
+                                                        {u.name}
+                                                    </p>
+                                                    <p className="text-xs text-slate-400">
+                                                        {u.email}
+                                                    </p>
+                                                </div>
+
+                                                <div className="text-amber-500 font-semibold flex items-center gap-1">
+                                                    ★ {u.rating}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-sm text-slate-400">
+                                            No reviews yet
+                                        </p>
+                                    )}
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        {/* FOOTER */}
+                        <div className="p-4 border-t border-slate-100 flex justify-end">
+                            <button
+                                onClick={() => setSelectedStore(null)}
+                                className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900"
+                            >
+                                Close
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            )}
         </section>
     );
 }

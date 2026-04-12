@@ -361,6 +361,7 @@ const UsersDataDashboard = () => {
                   <input
                     type="text"
                     name='name'
+                    required
                     onChange={(e) => updateSelected(e)}
                     defaultValue={selectedUser?.name}
                     className="w-full mt-1 bg-slate-100 border-none rounded-xl px-4 py-3
@@ -379,6 +380,7 @@ const UsersDataDashboard = () => {
                   <input
                     type="email"
                     name='email'
+                    required
                     onChange={(e) => updateSelected(e)}
                     defaultValue={selectedUser?.email}
                     className="w-full mt-1 bg-slate-100 border-none rounded-xl px-4 py-3
@@ -399,6 +401,7 @@ const UsersDataDashboard = () => {
                 <textarea
                   rows={3}
                   name='address'
+                  required
                   onChange={(e) => updateSelected(e)}
                   defaultValue={selectedUser?.address}
                   className="w-full mt-1 bg-slate-100 border-none rounded-xl px-4 py-3
@@ -419,6 +422,7 @@ const UsersDataDashboard = () => {
                 <select
                   defaultValue={selectedUser?.role}
                   name='role'
+                  required
                   onChange={(e) => updateSelected(e)}
                   className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3
             text-slate-800 focus:ring-4 focus:ring-sky-500/10

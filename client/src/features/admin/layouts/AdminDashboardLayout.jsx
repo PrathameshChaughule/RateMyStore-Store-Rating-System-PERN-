@@ -2,7 +2,6 @@ import React from 'react'
 import { useState } from "react";
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
-import MobileBottomNav from '../components/MobileBottomNav'
 import { Outlet } from 'react-router-dom';
 
 const AdminDashboardLayout = () => {
@@ -45,8 +44,6 @@ const AdminDashboardLayout = () => {
             <Outlet />
           </main>
         </div>
-
-        <MobileBottomNav />
       </div>
     </>
   );

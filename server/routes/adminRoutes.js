@@ -30,7 +30,7 @@ adminRouter.get('/user-counts', getUserStats)
 
 // add Store
 // POST /api/admin/store
-adminRouter.post('/store', userValidation, addStore)
+adminRouter.post('/store', addStore)
 
 
 // get all users

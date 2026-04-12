@@ -1,6 +1,7 @@
 import React from 'react'
 import StatsSection from '../components/StatsSection'
 import Icon from '../components/Icon'
+import { NavLink } from 'react-router-dom'
 
 const AdminDashboard = () => {
   return (
@@ -21,33 +22,30 @@ const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
-          <button className="flex-1 sm:flex-none flex items-center justify-center gap-2
+          <NavLink to="/admin/dashboard/userData">
+            <button className="flex-1 sm:flex-none flex items-center justify-center gap-2
             px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-sky-600 font-extrabold rounded-full
             shadow-sm border border-slate-200 hover:bg-slate-50 transition-all
             active:scale-95 text-sm">
-            <Icon name="person_add" className="text-sm" />
-            Add User
-          </button>
-          <button
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2
+              <Icon name="person_add" className="text-sm" />
+              Add User
+            </button>
+          </NavLink>
+          <NavLink to="/admin/dashboard/storeData">
+            <button
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2
               px-4 sm:px-6 py-2.5 sm:py-3 text-white font-extrabold rounded-full
               shadow-lg hover:opacity-90 transition-all active:scale-95 text-sm"
-            style={{ background: "linear-gradient(135deg, #006591 0%, #0ea5e9 100%)" }}
-          >
-            <Icon name="add_business" className="text-sm" />
-            Add Store
-          </button>
+              style={{ background: "linear-gradient(135deg, #006591 0%, #0ea5e9 100%)" }}
+            >
+              <Icon name="add_business" className="text-sm" />
+              Add Store
+            </button>
+          </NavLink>
         </div>
       </section>
 
-      {/* Stat cards */}
       <StatsSection />
-
-      {/* Activity feed + insights */}
-      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
-        <ActivityFeed />
-        <InsightsSidebar />
-      </div> */}
     </div>
   )
 }

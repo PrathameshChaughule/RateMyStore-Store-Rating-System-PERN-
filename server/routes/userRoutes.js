@@ -9,6 +9,5 @@ userRouter.use(authMiddleware, roleMiddleware(['USER']))
 userRouter.get("/stores", getStores);
 userRouter.get("/stores/:id", getStoreById);
 userRouter.post("/ratings", addRating);
-userRouter.put("/ratings/:id", updateRating);
 
 export default userRouter

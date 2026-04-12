@@ -7,7 +7,7 @@ function Sidebar({ sidebarOpen, onClose }) {
         { icon: "dashboard", label: "Dashboard", active: true, path: "/admin/dashboard" },
         { icon: "group", label: "Users", active: false, path: "/admin/dashboard/userData" },
         { icon: "store", label: "Stores", active: false, path: "/admin/dashboard/storedata" },
-        // { icon: "settings", label: "Settings", active: false },
+        { icon: "settings", label: "Settings", active: false, path: "/admin/dashboard/forgotPassword" },
     ];
     const token = localStorage.getItem('token')
     const decoded = jwtDecode(token)

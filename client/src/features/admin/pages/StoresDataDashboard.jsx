@@ -24,6 +24,10 @@ const storesDataDashboard = () => {
                 const res = await api.get('/api/admin/users', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
+                const res1 = await api.get('/api/admin/stores', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setStores(res1.data.data)
                 setUsers(res.data.data);
             } catch (error) {
                 toast.error(error?.response?.data?.message || error.message);
@@ -45,7 +49,28 @@ const storesDataDashboard = () => {
         });
     };
 
-
+    const addStore = async (e) => {
+        e.preventDefault()
+        try {
+            const { data } = await api.post('/api/admin/store', storeForm, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            toast.success(data.message)
+            setIsAddStoreOpen(false)
+            setStoreForm({
+                image: "",
+                name: "",
+                email: "",
+                address: "",
+                description: "",
+                owner_id: ""
+            })
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error.message)
+        }
+    }
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
@@ -182,7 +207,7 @@ const storesDataDashboard = () => {
                         </div>
 
                         {/* FORM */}
-                        <form className="space-y-4 sm:space-y-5">
+                        <form className="space-y-4 sm:space-y-5" onSubmit={(e) => addStore(e)}>
 
                             {/* IMAGE */}
                             <div>
@@ -191,6 +216,7 @@ const storesDataDashboard = () => {
                                 </label>
 
                                 <input
+                                    required
                                     name="image"
                                     value={storeForm.image}
                                     onChange={handleStoreChange}
@@ -206,6 +232,7 @@ const storesDataDashboard = () => {
                                 </label>
 
                                 <input
+                                    required
                                     name="name"
                                     value={storeForm.name}
                                     onChange={handleStoreChange}
@@ -221,6 +248,7 @@ const storesDataDashboard = () => {
                                 </label>
 
                                 <input
+                                    required
                                     name="email"
                                     type="email"
                                     value={storeForm.email}
@@ -237,6 +265,7 @@ const storesDataDashboard = () => {
                                 </label>
 
                                 <input
+                                    required
                                     name="address"
                                     value={storeForm.address}
                                     onChange={handleStoreChange}
@@ -252,6 +281,7 @@ const storesDataDashboard = () => {
                                 </label>
 
                                 <textarea
+                                    required
                                     name="description"
                                     value={storeForm.description}
                                     onChange={handleStoreChange}
@@ -268,6 +298,7 @@ const storesDataDashboard = () => {
                                 </label>
 
                                 <select
+                                    required
                                     name="owner_id"
                                     value={storeForm.owner_id}
                                     onChange={handleStoreChange}

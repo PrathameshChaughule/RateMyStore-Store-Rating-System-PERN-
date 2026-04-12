@@ -1,11 +1,27 @@
-import React from 'react'
+function StoreCard({ store, setSelectedStore, setSelectedRating }) {
+    const colors = [
+        "#0ea5e9",
+        "#10b981",
+        "#f59e0b",
+        "#ec4899",
+        "#6366f1",
+        "#ef4444",
+        "#a855f7",
+        "#14b8a6",
+    ];
+    const getColor = (name = "") => {
+        if (!name) return "bg-slate-400";
 
-function StoreCard({ store }) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        const index = Math.abs(hash) % colors.length;
+        return colors[index];
+    };
     return (
-        <div
-            className={`bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 ${store.offsetTop ? "lg:mt-12" : ""
-                }`}
-        >
+        <div className={`bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2`}>
             <div className="relative overflow-hidden h-70">
                 <img
                     src={store.image}
@@ -19,7 +35,7 @@ function StoreCard({ store }) {
                     >
                         star
                     </span>
-                    {store.rating}
+                    {Number(store.rating || 0).toFixed(2)}
                 </div>
             </div>
             <div className="p-5 sm:p-6 lg:p-8">
@@ -42,11 +58,34 @@ function StoreCard({ store }) {
                     </span>
                     {store.address}
                 </p>
-                {/* <div className="flex items-center justify-between pt-4 sm:pt-6 border-t border-slate-100">
-                    {extra}
-                    <button className="text-sky-600 font-bold text-sm hover:underline">View Reviews</button>
-                </div> */}
+
+                <div className="flex items-center justify-between pt-4 sm:pt-6 border-t border-slate-100">
+                    <div className="flex -space-x-2 items-center">
+
+                        {store.rated_users && store.rated_users.length > 0 &&
+                            store.rated_users.slice(0, 3).map((user, i) => (
+                                <div
+                                    key={i}
+                                    className={`w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold`}
+                                    style={{ backgroundColor: getColor(user.name) }}
+                                    title={`${user.name} (${user.rating}★)`}
+                                >
+                                    {user.name?.charAt(0).toUpperCase()}
+                                </div>
+                            ))}
+
+                        {store.rated_users?.length > 3 && (
+                            <div className="w-8 h-8 rounded-full border-2 border-white bg-slate-600 text-white text-[10px] flex items-center justify-center font-bold">
+                                +{store.rated_users.length - 3}
+                            </div>
+                        )}
+
+                    </div>
+                    <button onClick={() => { setSelectedStore(store), setSelectedRating(store.user_rating || store.rating || 0); }} className="text-sky-600 font-bold text-sm hover:underline">View Reviews</button>
+                </div>
             </div>
+
+
         </div>
     );
 }

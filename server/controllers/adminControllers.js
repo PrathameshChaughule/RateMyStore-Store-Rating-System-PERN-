@@ -136,10 +136,10 @@ export const getUserStats = async (req, res) => {
 // POST /api/admin/store
 export const addStore = async (req, res) => {
     try {
-        const { name, email, address, owner_id } = req.body
+        const { name, email, address, owner_id, image, description } = req.body
 
-        const result = await con.query(`INSERT INTO stores (name, email, address, owner_id) VALUES ($1, $2, $3, $4) RETURNING *`,
-            [name, email, address, owner_id]
+        const result = await con.query(`INSERT INTO stores (name, email, address, owner_id, image, description) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [name, email, address, owner_id, image, description]
         )
 
         return res.status(201).json({
