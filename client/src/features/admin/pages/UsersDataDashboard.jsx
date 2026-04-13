@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react'
 import Icon from '../components/Icon'
 import api from '../../../configs/api';
 import toast from 'react-hot-toast';
+import Loader from '../../user/components/Loader';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading } from '../../../app/features/authSlice';
 
 const UsersDataDashboard = () => {
   const token = localStorage.getItem('token')
@@ -47,16 +50,24 @@ const UsersDataDashboard = () => {
     email: "",
     password: "",
     address: "",
-    role: ""
+    role: "USER"
   })
   const [conPassword, setConPassword] = useState("")
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const { loading } = useSelector(state => state.auth)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchData = async () => {
+      dispatch(setLoading(true))
       try {
-        const res = await api.get('/api/admin/users', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await api.get(
+          `/api/admin/users?page=${page}&limit=6&search=${search}&role=${role}`,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
 
         const res1 = await api.get('/api/admin/user-counts', {
           headers: { Authorization: `Bearer ${token}` }
@@ -66,32 +77,40 @@ const UsersDataDashboard = () => {
 
         setStats((prev) =>
           prev.map((item) => {
-            if (item.label === "Total Users") {
-              return { ...item, value: counts.total_users };
-            }
-            if (item.label === "Normal Users") {
-              return { ...item, value: counts.total_users_role };
-            }
-            if (item.label === "Admin Users") {
-              return { ...item, value: counts.total_admins_role };
-            }
-            if (item.label === "Store Owners") {
-              return { ...item, value: counts.total_owners_role };
-            }
+            if (item.label === "Total Users") return { ...item, value: counts.total_users };
+            if (item.label === "Normal Users") return { ...item, value: counts.total_users_role };
+            if (item.label === "Admin Users") return { ...item, value: counts.total_admins_role };
+            if (item.label === "Store Owners") return { ...item, value: counts.total_owners_role };
             return item;
           })
         );
 
         setUsers(res.data.data);
+        setTotalPages(res.data.pagination.totalPages);
 
       } catch (error) {
         toast.error(error?.response?.data?.message || error.message);
+      } finally {
+        dispatch(setLoading(false))
       }
     };
 
     fetchData();
-  }, [isAddOpen, isEditOpen]);
+  }, [page, search, role, isAddOpen, isEditOpen]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [search, role]);
+
+  // debouncing
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(delay);
+  }, [search]);
+
+  if (loading) return <Loader />
 
   // add user
   const formUpdate = (e) => {
@@ -112,16 +131,6 @@ const UsersDataDashboard = () => {
       toast.error(error?.response?.data?.message || error.message)
     }
   }
-
-  const filteredusers = users.filter((u) => {
-    const matchesSearch =
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase());
-
-    const matchesRole = role === "ALL" || u.role === role;
-
-    return matchesSearch && matchesRole;
-  });
 
   const handleEdit = (user) => {
     setSelectedUser({
@@ -180,7 +189,7 @@ const UsersDataDashboard = () => {
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8 lg:space-y-10">
 
-      {/* ───────── HEADER ───────── */}
+      
       <section className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900"
@@ -205,7 +214,6 @@ const UsersDataDashboard = () => {
         </div>
       </section>
 
-      {/* ───────── ROW 1 stats ───────── */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {stats.map((s) => (
           <div
@@ -231,7 +239,6 @@ const UsersDataDashboard = () => {
         ))}
       </section>
 
-      {/* ───────── FILTERS ───────── */}
       <section className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
         <input
           type="text"
@@ -249,13 +256,11 @@ const UsersDataDashboard = () => {
           <option value="ALL">All Roles</option>
           <option value="USER">User</option>
           <option value="ADMIN">Admin</option>
-          <option value="STORE_OWNER">Store Owner</option>
+          <option value="OWNER">Store Owner</option>
         </select>
       </section>
 
-      {/* ───────── TABLE ───────── */}
       <div className="bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden">
-
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
@@ -271,7 +276,7 @@ const UsersDataDashboard = () => {
             </thead>
 
             <tbody>
-              {filteredusers.map((u) => (
+              {users.map((u) => (
                 <tr key={u.id} className="border-t hover:bg-slate-50">
 
                   <td className="p-4 font-semibold text-slate-800">{u.name}</td>
@@ -292,7 +297,7 @@ const UsersDataDashboard = () => {
                     {u.role === "OWNER" ? (
                       <div className="flex items-center gap-1 text-amber-500 font-semibold">
                         <Icon name="star" fill={1} className="text-sm" />
-                        {u.rating}
+                        {Number(u.rating || 0).toFixed(2)}
                       </div>
                     ) : (
                       "-"
@@ -320,6 +325,36 @@ const UsersDataDashboard = () => {
         </div>
       </div>
 
+      <div className="flex justify-center items-center gap-2 mt-6">
+
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className="px-3 py-1 bg-slate-200 rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
+
+        {[...Array(totalPages)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setPage(i + 1)}
+            className={`px-3 py-1 rounded ${page === i + 1 ? "bg-sky-600 text-white" : "bg-slate-200"
+              }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+          className="px-3 py-1 bg-slate-200 rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+
+      </div>
 
       {/* Edit Form */}
       {isEditOpen && (
@@ -488,10 +523,10 @@ const UsersDataDashboard = () => {
                 className="text-xl font-extrabold text-slate-900"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
               >
-                Edit User
+                Add User
               </h2>
               <p className="text-sm text-slate-500 mt-1">
-                Update user details and role information
+                Add user details and role information
               </p>
             </div>
 
@@ -639,6 +674,7 @@ const UsersDataDashboard = () => {
                   onChange={formUpdate}
                   className="w-full bg-slate-100 border-none rounded-xl px-4 py-3.5 text-slate-800 focus:ring-4 focus:ring-sky-500/10 focus:bg-white transition-all outline-none text-sm"
                 >
+
                   <option value="USER">User</option>
                   <option value="ADMIN">Admin</option>
                   <option value="OWNER">Store Owner</option>

@@ -13,6 +13,7 @@ export const getStores = async (req, res) => {
         COALESCE(
           JSON_AGG(
             JSON_BUILD_OBJECT(
+              'id', u.id,
               'name', u.name,
               'email', u.email,
               'rating', r.rating

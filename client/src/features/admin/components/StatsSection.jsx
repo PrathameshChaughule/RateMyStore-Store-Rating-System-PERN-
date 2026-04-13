@@ -1,33 +1,77 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Icon from './Icon';
+import api from '../../../configs/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading } from '../../../app/features/authSlice';
+import Loader from '../../user/components/Loader';
 
-function StatsSection() {
-    const STATS = [
+function statsSection() {
+    const token = localStorage.getItem('token')
+    const [stats, setStats] = useState({
+        totalUsers: 0,
+        totalStores: 0,
+        totalRatings: 0,
+    });
+    const cards = [
         {
             label: "Total Users",
-            value: "120",
+            value: stats.totalUsers,
             valueColor: "text-sky-600",
             blob: "bg-sky-500/5 group-hover:bg-sky-500/10",
-            footer: { icon: "trending_up", text: "12% from last month", color: "text-teal-600" },
+            footer: {
+                icon: "trending_up",
+                text: "12% from last month",
+                color: "text-teal-600"
+            },
         },
         {
             label: "Total Stores",
-            value: "45",
+            value: stats.totalStores,
             valueColor: "text-slate-900",
             blob: "bg-teal-500/5 group-hover:bg-teal-500/10",
-            footer: { icon: "check_circle", text: "4 new pending approval", color: "text-teal-600" },
+            footer: {
+                icon: "check_circle",
+                text: "4 new pending approval",
+                color: "text-teal-600"
+            },
         },
         {
             label: "Total Ratings",
-            value: "320",
+            value: stats.totalRatings,
             valueColor: "text-slate-900",
             blob: "bg-amber-500/5 group-hover:bg-amber-500/10",
             footer: null,
         },
     ];
+    const { loading } = useSelector(state => state.auth)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            dispatch(setLoading(true))
+            try {
+                const { data } = await api.get("/api/admin/dashboard-stats", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setStats(data.data);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                dispatch(setLoading(false))
+            }
+        };
+
+        fetchStats();
+    }, []);
+
+    if (loading) return <Loader />
+
+
     return (
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-            {STATS.map((s) => (
+            {cards.map((s) => (
                 <div
                     key={s.label}
                     className="bg-white p-6 sm:p-8 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.05)]
@@ -76,4 +120,4 @@ function StatsSection() {
     );
 }
 
-export default StatsSection
+export default statsSection

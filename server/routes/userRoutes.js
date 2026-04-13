@@ -4,7 +4,7 @@ import roleMiddleware from '../middleware/roleMiddleware.js';
 import { addRating, getStoreById, getStores, updateRating } from '../controllers/userControllers.js';
 const userRouter = express.Router()
 
-userRouter.use(authMiddleware, roleMiddleware(['USER']))
+userRouter.use(authMiddleware, roleMiddleware(['USER','ADMIN','OWNER']))
 
 userRouter.get("/stores", getStores);
 userRouter.get("/stores/:id", getStoreById);

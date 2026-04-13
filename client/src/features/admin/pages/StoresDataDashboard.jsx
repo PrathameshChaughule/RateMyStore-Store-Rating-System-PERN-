@@ -2,6 +2,9 @@ import Icon from '../components/Icon'
 import toast from 'react-hot-toast';
 import api from '../../../configs/api';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading } from '../../../app/features/authSlice';
+import Loader from '../../user/components/Loader';
 
 const storesDataDashboard = () => {
     const token = localStorage.getItem('token')
@@ -17,25 +20,37 @@ const storesDataDashboard = () => {
     const [isAddStoreOpen, setIsAddStoreOpen] = useState(false);
     const [users, setUsers] = useState([])
     const [stores, setStores] = useState([])
+    const [storePage, setStorePage] = useState(1);
+    const [storeTotalPages, setStoreTotalPages] = useState(1);
+    const { loading } = useSelector(state => state.auth)
+    const dispatch = useDispatch()
 
     useEffect(() => {
         const fetchData = async () => {
+            dispatch(setLoading(true))
             try {
-                const res = await api.get('/api/admin/users', {
+                const res = await api.get(`/api/admin/allUsers`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                const res1 = await api.get('/api/admin/stores', {
+
+                const res1 = await api.get(`/api/admin/stores?page=${storePage}&limit=6`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                setStores(res1.data.data)
+
                 setUsers(res.data.data);
+                setStores(res1.data.data);
+                setStoreTotalPages(res1.data.pagination.totalPages);
             } catch (error) {
                 toast.error(error?.response?.data?.message || error.message);
+            } finally {
+                dispatch(setLoading(false))
             }
         };
 
         fetchData();
-    }, [isAddStoreOpen]);
+    }, [storePage, isAddStoreOpen]);
+
+    if (loading) return <Loader />
 
     const filteredstores = stores.filter((s) =>
         s.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -71,6 +86,23 @@ const storesDataDashboard = () => {
             toast.error(error?.response?.data?.message || error.message)
         }
     }
+
+    // delete store
+    const deleteStore = async (id) => {
+        try {
+            const { data } = await api.delete(`/api/admin/delete-store/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            toast.success(data.message)
+            setStores(stores.filter(val => val.id !== id))
+            setStorePage(1)
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error.message)
+        }
+    }
+
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
@@ -155,7 +187,7 @@ const storesDataDashboard = () => {
                             {/* RATING */}
                             <div className="flex items-center gap-1 text-amber-500 font-semibold">
                                 <Icon name="star" fill={1} className="text-sm" />
-                                {store.rating}
+                                {Number(store.rating || 0).toFixed(2)}
                             </div>
 
                             {/* ACTIONS */}
@@ -169,7 +201,7 @@ const storesDataDashboard = () => {
                                     Edit
                                 </button>
 
-                                <button className="px-3 py-1.5 text-xs font-bold rounded-lg  text-red-500 bg-red-50 border border-red-100  hover:bg-red-100 hover:scale-105 transition-all duration-200">
+                                <button onClick={() => deleteStore(store.id)} className="px-3 py-1.5 text-xs font-bold rounded-lg  text-red-500 bg-red-50 border border-red-100  hover:bg-red-100 hover:scale-105 transition-all duration-200">
                                     Delete
                                 </button>
 
@@ -181,7 +213,36 @@ const storesDataDashboard = () => {
                 ))}
 
             </section>
+            <div className="flex justify-center items-center gap-2 mt-6">
 
+                <button
+                    disabled={storePage === 1}
+                    onClick={() => setStorePage(storePage - 1)}
+                    className="px-3 py-1 bg-slate-200 rounded disabled:opacity-50"
+                >
+                    Prev
+                </button>
+
+                {[...Array(storeTotalPages)].map((_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => setStorePage(i + 1)}
+                        className={`px-3 py-1 rounded ${storePage === i + 1 ? "bg-sky-600 text-white" : "bg-slate-200"
+                            }`}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
+
+                <button
+                    disabled={storePage === storeTotalPages}
+                    onClick={() => setStorePage(storePage + 1)}
+                    className="px-3 py-1 bg-slate-200 rounded disabled:opacity-50"
+                >
+                    Next
+                </button>
+
+            </div>
 
             {isAddStoreOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -306,8 +367,9 @@ const storesDataDashboard = () => {
                                 >
                                     <option value="">Select Owner</option>
 
-                                    {users
-                                        .filter((u) => u.role === "OWNER")
+                                    {users.filter((u) =>
+                                        u.role === "OWNER" &&
+                                        !stores.some((s) => s.owner_id === u.id))
                                         .map((u) => (
                                             <option key={u.id} value={u.id}>
                                                 {u.name} (ID: {u.id})

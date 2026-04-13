@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
 import con from '../config/db.js'
 import jwt from 'jsonwebtoken'
+import otpEmail from '../config/email.js'
 
 // /api/auth/register
 export const register = async (req, res) => {
@@ -57,3 +58,99 @@ export const login = async (req, res) => {
         })
     }
 }
+
+
+
+// email verify and otp generate
+// POST /api/auth/forgot-password
+const otpStore = new Map();
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await con.query(
+      "SELECT id, email FROM users WHERE email=$1",
+      [email]
+    );
+
+    if (user.rows.length === 0) {
+      return res.status(404).json({ message: "Email not found" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    otpStore.set(email, {
+      otp,
+      expiresAt: Date.now() + 10 * 60 * 1000, // 10 min
+    });
+
+    await otpEmail(email, otp)
+
+    return res.json({
+      success: true,
+      message: "OTP sent successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+// verify Otp
+// POST /api/auth/verify-otp
+export const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const record = otpStore.get(email);
+
+    if (!record) {
+      return res.status(400).json({ message: "OTP not found" });
+    }
+
+    if (Date.now() > record.expiresAt) {
+      otpStore.delete(email);
+      return res.status(400).json({ message: "OTP expired" });
+    }
+
+    if (record.otp !== otp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    return res.json({
+      success: true,
+      message: "OTP verified",
+    });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+// reset password
+// POST /api/auth/reset-password
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const record = otpStore.get(email);
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    await con.query(
+      "UPDATE users SET password=$1 WHERE email=$2",
+      [hashed, email]
+    );
+
+    otpStore.delete(email);
+
+    return res.json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};

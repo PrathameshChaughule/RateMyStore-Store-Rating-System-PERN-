@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import api from "../../../configs/api.js";
 import { useDispatch } from 'react-redux'
 import { login } from '../../../app/features/authSlice.js'
@@ -183,9 +183,9 @@ export default function Login() {
                                         <label htmlFor="login-password" className="block text-sm font-bold text-slate-800">
                                             Password
                                         </label>
-                                        <a href="#" className="text-xs font-bold text-sky-600 hover:text-sky-700 transition-colors">
+                                        <NavLink to="/updatePassword" className="text-xs font-bold text-sky-600 hover:text-sky-700 transition-colors">
                                             Forgot Password?
-                                        </a>
+                                        </NavLink>
                                     </div>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">

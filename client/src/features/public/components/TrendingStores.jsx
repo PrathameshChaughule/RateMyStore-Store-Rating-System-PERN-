@@ -1,5 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import StoreCard from './StoreCard'
+import toast from 'react-hot-toast';
+import api from '../../../configs/api';
+import { setLoading } from '../../../app/features/authSlice';
+import { useDispatch, useSelector } from 'react-redux'
+import Loader from '../../user/components/Loader'
 
 function TrendingStores() {
     const [count, setCount] = useState(0)
@@ -8,136 +13,25 @@ function TrendingStores() {
         market: "https://lh3.googleusercontent.com/aida-public/AB6AXuDembC8WhSE9reMlkmtkSc239_gax8DEnQnoDqg5G77NVgW8duufyPYQQ_yVGPzvgNwGEDtAZ_OuNd8F0ONHwREHa5P_3YnP9p-7GcQL2HJxdF2y7j0PhMmDyAVhNd8iCu9y9mN_nclBKPstSMGuoYcyF3ldcdaYUSnfn6MBLvTBpPgU9MS_oitl0l5Zh-wTOzMupEPeJSAGrvPMz2tnmyjSx6vvzlTRyk8I67Sk5VQcEt5psM9lfRC39_xzHuhAjvcsUQyjc_2xVM",
         studio: "https://lh3.googleusercontent.com/aida-public/AB6AXuCw3KrNaGB09xt1IvAACdWOsrXXrXtakAm7L75pddirpKiO_uyUPNBNtPswB70ur9Eo0qaiBYDQ60dD30L98LC6yoboSXJ2vcrA7yawJGP14LtY1uhycK0wT31VhKaDdYvuXxwLUH9BqJgA3Nypa5cUd8MoVVQL00zD8wlUbnXTrCzLasSfRzDF7QSnEtJ0uITyoGXfvo8QZ4ePZonj7xeyTs100LxE1yVuhH1mQ_B4L8NRq5M4zFPhyJ3flu3AqyfSVqLR6SyyppY",
     };
-    const stores = [
-        {
-            image: IMAGES.cafe,
-            imageHeight: 280,
-            rating: "4.9",
-            badge: "Premium Coffee",
-            badgeClass: "bg-teal-600 text-teal-100",
-            name: "The Glass House",
-            address: "77 Rose Ave, Venice, CA 90291",
-            description:
-                "Experience artisan coffee in a botanical-inspired environment. Known for their cold brew and house-made pastries.",
-            extra: (
-                <div className="flex -space-x-2">
-                    {["bg-slate-200", "bg-slate-300", "bg-slate-400"].map((bg, i) => (
-                        <div key={i} className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white ${bg}`} />
-                    ))}
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white bg-sky-600 text-[9px] sm:text-[10px] text-white flex items-center justify-center font-bold">
-                        +12
-                    </div>
-                </div>
-            ),
-        },
-        {
-            image: IMAGES.market,
-            imageHeight: 220,
-            rating: "4.7",
-            badge: "Organic Market",
-            badgeClass: "bg-amber-500 text-amber-950",
-            name: "Roots & Shoots",
-            address: "14 Grand Central Pkwy, Queens, NY",
-            description:
-                "Your neighborhood source for locally grown organic produce and sustainable household goods.",
-            offsetTop: true,
-            extra: (
-                <div className="flex -space-x-2">
-                    {["bg-slate-200", "bg-slate-300", "bg-slate-400"].map((bg, i) => (
-                        <div key={i} className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white ${bg}`} />
-                    ))}
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white bg-sky-600 text-[9px] sm:text-[10px] text-white flex items-center justify-center font-bold">
-                        +12
-                    </div>
-                </div>
-            ),
-        },
-        {
-            image: IMAGES.studio,
-            imageHeight: 340,
-            rating: "4.9",
-            badge: "Luxury Apparel",
-            badgeClass: "bg-sky-600 text-white",
-            name: "Minimalist Studio",
-            address: "848 Washington Blvd, Venice, CA 9029",
-            description:
-                "Curated fashion for the modern professional. Timeless pieces designed for quality and longevity.",
-            extra: (
-                <div className="flex -space-x-2">
-                    {["bg-slate-200", "bg-slate-300", "bg-slate-400"].map((bg, i) => (
-                        <div key={i} className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white ${bg}`} />
-                    ))}
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white bg-sky-600 text-[9px] sm:text-[10px] text-white flex items-center justify-center font-bold">
-                        +12
-                    </div>
-                </div>
-            ),
-        },
-        {
-            image: IMAGES.cafe,
-            imageHeight: 280,
-            rating: "4.9",
-            badge: "Premium Coffee",
-            badgeClass: "bg-teal-600 text-teal-100",
-            name: "The Glass House",
-            address: "77 Rose Ave, Venice, CA 90291",
-            description:
-                "Experience artisan coffee in a botanical-inspired environment. Known for their cold brew and house-made pastries.",
-            extra: (
-                <div className="flex -space-x-2">
-                    {["bg-slate-200", "bg-slate-300", "bg-slate-400"].map((bg, i) => (
-                        <div key={i} className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white ${bg}`} />
-                    ))}
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white bg-sky-600 text-[9px] sm:text-[10px] text-white flex items-center justify-center font-bold">
-                        +12
-                    </div>
-                </div>
-            ),
-        },
-        {
-            image: IMAGES.market,
-            imageHeight: 220,
-            rating: "4.7",
-            badge: "Organic Market",
-            badgeClass: "bg-amber-500 text-amber-950",
-            name: "Roots & Shoots",
-            address: "14 Grand Central Pkwy, Queens, NY",
-            description:
-                "Your neighborhood source for locally grown organic produce and sustainable household goods.",
-            offsetTop: true,
-            extra: (
-                <div className="flex -space-x-2">
-                    {["bg-slate-200", "bg-slate-300", "bg-slate-400"].map((bg, i) => (
-                        <div key={i} className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white ${bg}`} />
-                    ))}
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white bg-sky-600 text-[9px] sm:text-[10px] text-white flex items-center justify-center font-bold">
-                        +12
-                    </div>
-                </div>
-            ),
-        },
-        {
-            image: IMAGES.studio,
-            imageHeight: 340,
-            rating: "4.9",
-            badge: "Luxury Apparel",
-            badgeClass: "bg-sky-600 text-white",
-            name: "Minimalist Studio",
-            address: "848 Washington Blvd, Venice, CA 9029",
-            description:
-                "Curated fashion for the modern professional. Timeless pieces designed for quality and longevity.",
-            extra: (
-                <div className="flex -space-x-2">
-                    {["bg-slate-200", "bg-slate-300", "bg-slate-400"].map((bg, i) => (
-                        <div key={i} className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white ${bg}`} />
-                    ))}
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white bg-sky-600 text-[9px] sm:text-[10px] text-white flex items-center justify-center font-bold">
-                        +12
-                    </div>
-                </div>
-            ),
-        },
-    ];
+    const [stores, setStores] = useState([])
+    const { loading } = useSelector(state => state.auth)
+    const dispatch = useDispatch()
+    useEffect(() => {
+        const fetchData = async () => {
+            dispatch(setLoading(true))
+            try {
+                const res = await api.get(`/api/public/trending-stores`);
+                setStores(res.data.data)
+            } catch (error) {
+                toast.error(error?.response?.data?.message || error.message);
+            } finally {
+                dispatch(setLoading(false))
+            }
+        }
+        fetchData()
+    }, [])
+
+    if (loading) return <Loader />
 
     return (
         <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
@@ -158,26 +52,52 @@ function TrendingStores() {
                     </div>
                     <div className="flex gap-3">
                         <button
-                            onClick={() => setCount(prev => prev - 3)}
-                            disabled={count == 0}
-                            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all border border-slate-300 text-slate-500 hover:border-sky-500 hover:text-sky-600`}
+                            onClick={() => setCount(prev => Math.max(prev - 1, 0))}
+                            disabled={count === 0}
+                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all border border-slate-300 text-slate-500 hover:border-sky-500 hover:text-sky-600 disabled:opacity-40"
                         >
-                            <span className="material-symbols-outlined text-lg sm:text-xl">west</span>
+                            <span className="material-symbols-outlined">west</span>
                         </button>
+
                         <button
-                            onClick={() => setCount(prev => prev + 3)}
-                            disabled={count === stores.length - 3}
-                            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all bg-sky-600 text-white shadow-lg shadow-sky-200`}
+                            onClick={() =>
+                                setCount(prev => Math.min(prev + 1, stores.length - 3))
+                            }
+                            disabled={count >= stores.length - 3}
+                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all bg-sky-600 text-white shadow-lg shadow-sky-200 disabled:opacity-40"
                         >
-                            <span className="material-symbols-outlined text-lg sm:text-xl">east</span>
+                            <span className="material-symbols-outlined">east</span>
                         </button>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-start">
-                    {stores.slice(count, count + 3).map((store) => (
-                        <StoreCard key={store.name} {...store} />
-                    ))}
+                <div className="relative overflow-hidden">
+
+                    {/* SLIDER TRACK */}
+                    <div
+                        className="flex transition-transform duration-500 ease-in-out"
+                        style={{
+                            transform: `translateX(-${count * (100 / 3)}%)`,
+                        }}
+                    >
+                        {stores.map((store) => (
+                            <div
+                                key={store.name}
+                                className="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-3"
+                            >
+                                <div className="transition-transform duration-300 hover:scale-105">
+                                    <StoreCard {...store} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* LEFT FADE (premium look) */}
+                    <div className="absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-white to-transparent z-10" />
+
+                    {/* RIGHT FADE */}
+                    <div className="absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10" />
+
                 </div>
             </div>
         </section>

@@ -4,9 +4,8 @@ import { NavLink } from "react-router-dom";
 
 function Sidebar({ sidebarOpen, onClose }) {
     const NAV_ITEMS = [
-        { icon: "dashboard", label: "Dashboard", active: true, path: "/admin/dashboard" },
-        { icon: "group", label: "Users", active: false, path: "/admin/dashboard/userData" },
-        { icon: "store", label: "Stores", active: false, path: "/admin/dashboard/storedata" },
+        { icon: "store", label: "Store", active: false, path: "/owner/dashboard" },
+        { icon: "group", label: "Users", active: false, path: "/owner/dashboard/userData" },
         { icon: "visibility", label: "View Stores", path: "/user/stores" },
         { icon: "settings", label: "Update Password", active: false, path: "/updatePassword" },
     ];
@@ -22,7 +21,7 @@ function Sidebar({ sidebarOpen, onClose }) {
                         className="text-base font-extrabold text-slate-900 tracking-tight"
                         style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                     >
-                        Admin Panel
+                        Owner Panel
                     </h2>
                     <p className="text-[10px] text-slate-400 font-semibold tracking-wider uppercase mt-0.5">
                         Management Console
@@ -43,7 +42,7 @@ function Sidebar({ sidebarOpen, onClose }) {
                     <NavLink
                         key={label}
                         to={path}
-                        end={path === "/admin/dashboard"}
+                        end={path === "/owner/dashboard"}
                         onClick={onClose}
                         className={({ isActive }) =>
                             `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 group

@@ -1,4 +1,4 @@
-function StoreCard({ image, rating, badge, badgeClass, address, name, description, extra, offsetTop }) {
+function StoreCard({ image, avg_rating, badge, badgeClass, address, name, description, extra, offsetTop }) {
   return (
     <div
       className={`bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 ${offsetTop ? "lg:mt-12" : ""
@@ -17,7 +17,7 @@ function StoreCard({ image, rating, badge, badgeClass, address, name, descriptio
           >
             star
           </span>
-          {rating}
+          {Number(avg_rating).toFixed(1)}
         </div>
       </div>
       <div className="p-5 sm:p-6 lg:p-8">

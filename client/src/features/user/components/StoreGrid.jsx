@@ -4,28 +4,53 @@ import StoreCard from './StoreCard';
 import toast from 'react-hot-toast';
 import api from '../../../configs/api';
 import StarRating from './StarRating';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading } from '../../../app/features/authSlice';
+import Loader from './Loader';
 
-function StoreGrid() {
+function StoreGrid({ search }) {
     const token = localStorage.getItem('token')
     // const [activeFilter, setActiveFilter] = useState("All Boutiques");
     const [selectedStore, setSelectedStore] = useState(null);
     const [selectedRating, setSelectedRating] = useState(0);
     const [stores, setStores] = useState([])
+    const [visibleCount, setVisibleCount] = useState(6);
+    const { loading } = useSelector(state => state.auth)
+    const dispatch = useDispatch()
+
     useEffect(() => {
         const fetchData = async () => {
+            dispatch(setLoading(true))
             try {
                 const res = await api.get('/api/user/stores', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setStores(res.data.data)
-                console.log(res.data.data)
             } catch (error) {
                 toast.error(error?.response?.data?.message || error.message);
+            } finally {
+                dispatch(setLoading(false))
             }
         };
 
         fetchData();
     }, [selectedStore]);
+
+    useEffect(() => {
+        if (selectedStore) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
+        }
+
+        return () => {
+            document.body.style.overflow = "auto";
+        };
+    }, [selectedStore]);
+
+    useEffect(() => {
+        setVisibleCount(6);
+    }, [stores, search]);
 
     const saveRating = async (storeId) => {
         try {
@@ -49,29 +74,39 @@ function StoreGrid() {
         }
     };
 
+    const filteredStores = stores.filter((store) =>
+        store.name.toLowerCase().includes(search.toLowerCase()) ||
+        store.address.toLowerCase().includes(search.toLowerCase()) ||
+        store.description.toLowerCase().includes(search.toLowerCase())
+    );
+
+    if (loading) return <Loader />
+
     return (
         <section>
             {/* <FilterChips active={activeFilter} onSelect={setActiveFilter} /> */}
 
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 items-start">
-                {stores.map((store) => (
+                {filteredStores.slice(0, visibleCount).map((store) => (
                     <StoreCard key={store.id} store={store} setSelectedStore={setSelectedStore} setSelectedRating={setSelectedRating} />
                 ))}
             </div>
 
             {/* Load more */}
-            <div className="mt-14 sm:mt-20 text-center">
-                <button className="bg-sky-600 text-white px-7 sm:px-10 py-3.5 sm:py-4 rounded-xl shadow-lg shadow-sky-500/25 hover:bg-sky-600/90 hover:-translate-y-0.5 active:scale-95 inline-flex items-center gap-2 font-extrabold hover:gap-4 transition-all duration-300 text-sm sm:text-base group">
-                    Load more stores
-                    <span
-                        className={`material-symbols-outlined select-none leading-none text-xl group-hover:translate-x-1 transition-transform duration-300`}
-                        style={{ fontVariationSettings: "'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24" }}
+            {visibleCount < filteredStores.length && (
+                <div className="mt-14 sm:mt-20 text-center">
+                    <button
+                        onClick={() => setVisibleCount((prev) => prev + 3)}
+                        className="bg-sky-600 text-white px-7 sm:px-10 py-3.5 sm:py-4 rounded-xl shadow-lg shadow-sky-500/25 hover:bg-sky-600/90 hover:-translate-y-0.5 active:scale-95 inline-flex items-center gap-2 font-extrabold hover:gap-4 transition-all duration-300 text-sm sm:text-base group"
                     >
-                        arrow_forward
-                    </span>
-                </button>
-            </div>
+                        Load more stores
+                        <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform duration-300">
+                            arrow_forward
+                        </span>
+                    </button>
+                </div>
+            )}
 
 
             {selectedStore && (
@@ -84,7 +119,7 @@ function StoreGrid() {
                     />
 
                     {/* MODAL */}
-                    <div className="relative bg-white rounded-2xl w-[92%] max-w-4xl shadow-2xl overflow-hidden">
+                    <div className="relative bg-white rounded-2xl w-[92%] max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
 
                         {/* TOP IMAGE SECTION */}
                         <div className="relative h-56 sm:h-64 w-full">
@@ -115,7 +150,7 @@ function StoreGrid() {
                         </div>
 
                         {/* BODY */}
-                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto">
 
                             {/* LEFT SIDE - DETAILS */}
                             <div>
@@ -159,8 +194,7 @@ function StoreGrid() {
                                     User Reviews ({selectedStore.rated_users?.length || 0})
                                 </h3>
 
-                                <div className="space-y-3 max-h-72 overflow-y-auto pr-2">
-
+                                <div className="space-y-3 max-h-60 md:max-h-72 overflow-y-auto pr-2">
                                     {selectedStore.rated_users?.length > 0 ? (
                                         selectedStore.rated_users.map((u, i) => (
                                             <div

@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import StoreGrid from '../components/StoreGrid'
 import Footer from '../../public/components/Footer'
 
 const UserStores = () => {
+  const [search, setSearch] = useState("");
   return (
     <>
       <link
@@ -33,10 +34,10 @@ const UserStores = () => {
       `}</style>
 
       <div className="min-h-screen bg-slate-50 text-slate-900 antialiased">
-        <Navbar />
+        <Navbar search={search} setSearch={setSearch} />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-20">
           <Hero />
-          <StoreGrid />
+          <StoreGrid search={search} />
         </main>
         <Footer />
       </div>

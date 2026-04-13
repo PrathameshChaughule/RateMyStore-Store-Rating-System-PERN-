@@ -1,3 +1,5 @@
+import { jwtDecode } from 'jwt-decode'
+
 function StoreCard({ store, setSelectedStore, setSelectedRating }) {
     const colors = [
         "#0ea5e9",
@@ -9,6 +11,8 @@ function StoreCard({ store, setSelectedStore, setSelectedRating }) {
         "#a855f7",
         "#14b8a6",
     ];
+    const token = localStorage.getItem('token')
+    const decoded = jwtDecode(token)
     const getColor = (name = "") => {
         if (!name) return "bg-slate-400";
 
@@ -81,7 +85,19 @@ function StoreCard({ store, setSelectedStore, setSelectedRating }) {
                         )}
 
                     </div>
-                    <button onClick={() => { setSelectedStore(store), setSelectedRating(store.user_rating || store.rating || 0); }} className="text-sky-600 font-bold text-sm hover:underline">View Reviews</button>
+                    <button
+                        onClick={() => {
+                            const userRating = store.rated_users?.find(
+                                (u) => u.id === decoded.id
+                            );
+
+                            setSelectedStore(store);
+                            setSelectedRating(userRating?.rating || 0);
+                        }}
+                        className="text-sky-600 font-bold text-sm hover:underline"
+                    >
+                        View Reviews
+                    </button>
                 </div>
             </div>
 
