@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: "https://ratemystore-server.onrender.com"
+    baseURL: "https://rate-my-store-server.onrender.com"
 })
 
 export default api
