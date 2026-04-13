@@ -7,7 +7,7 @@ import AdminDashboard from "./features/admin/pages/AdminDashboard";
 import OwnerDashboard from "./features/owner/pages/OwnerDashboard";
 import UserStores from "./features/user/pages/UserStores";
 import UserLayout from "./features/user/layout/UserLayout";
-import AdminLayout from "./features/admin/layouts/adminLayout";
+import AdminLayout from "./features/admin/layouts/AdminLayout";
 import OwnerLayout from "./features/owner/layouts/OwnerLayout";
 import Unauthorized from "./features/auth/pages/Unauthorized";
 import AdminDashboardLayout from "./features/admin/layouts/AdminDashboardLayout";
