@@ -50,7 +50,7 @@ function TrendingStores() {
                             Trending Stores
                         </h2>
                     </div>
-                    <div className="flex gap-3">
+                    {/* <div className="flex gap-3">
                         <button
                             onClick={() => setCount(prev => Math.max(prev - 1, 0))}
                             disabled={count === 0}
@@ -68,12 +68,11 @@ function TrendingStores() {
                         >
                             <span className="material-symbols-outlined">east</span>
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
-                <div className="relative overflow-hidden">
+                {/* <div className="relative overflow-hidden">
 
-                    {/* SLIDER TRACK */}
                     <div
                         className="flex transition-transform duration-500 ease-in-out"
                         style={{
@@ -92,15 +91,20 @@ function TrendingStores() {
                         ))}
                     </div>
 
-                    {/* LEFT FADE (premium look) */}
                     <div className="absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-white to-transparent z-10" />
 
-                    {/* RIGHT FADE */}
                     <div className="absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10" />
 
+                </div> */}
+
+                <div className="carousel carousel-center rounded-box gap-5 w-full">
+                    {stores.map((store) => (
+                        <div className="carousel-item">
+                            <StoreCard {...store} />
+                        </div>))}
                 </div>
             </div>
-        </section>
+        </section >
     );
 }
 

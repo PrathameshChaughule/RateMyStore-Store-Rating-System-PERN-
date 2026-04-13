@@ -1,14 +1,13 @@
-function StoreCard({ image, avg_rating, badge, badgeClass, address, name, description, extra, offsetTop }) {
+function StoreCard({ image, avg_rating, address, name, description }) {
   return (
     <div
-      className={`bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 ${offsetTop ? "lg:mt-12" : ""
-        }`}
+      className={`bg-white w-82 md:w-87.5 lg:w-98 rounded-2xl overflow-hidden shadow-sm hover:shadow-1xl transition-all duration-500 hover:-translate-y-1`}
     >
       <div className="relative overflow-hidden h-70">
         <img
           src={image}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-700 hover:scale-103"
         />
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 px-2.5 sm:px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-xs font-bold text-amber-600 flex items-center gap-1">
           <span
@@ -41,7 +40,6 @@ function StoreCard({ image, avg_rating, badge, badgeClass, address, name, descri
           {address}
         </p>
         <div className="flex items-center justify-between pt-4 sm:pt-6 border-t border-slate-100">
-          {extra}
           <button className="text-sky-600 font-bold text-sm hover:underline">View Reviews</button>
         </div>
       </div>
