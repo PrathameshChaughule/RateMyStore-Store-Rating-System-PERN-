@@ -1,11 +1,13 @@
-import {Pool} from 'pg'
+import { Pool } from "pg";
 
 const con = new Pool({
-  user: "postgres",
-  password: "PrathameshC",
-  host: "localhost",
-  port: 5432,
-  database: "store_rating_system"
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  max: 5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000
 });
 
 export default con;
