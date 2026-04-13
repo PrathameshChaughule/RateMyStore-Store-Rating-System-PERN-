@@ -4,14 +4,12 @@ import Icon from "../components/Icon"
 import { useEffect } from 'react';
 import api from '../../../configs/api';
 import toast from 'react-hot-toast';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setLoading } from '../../../app/features/authSlice';
 import { useState } from 'react';
-import Loader from '../../user/components/Loader';
 
 const OwnerDashboard = () => {
   const token = localStorage.getItem('token')
-  const { loading } = useSelector(state => state.auth)
   const dispatch = useDispatch()
   const [store, setStore] = useState({})
 
@@ -32,8 +30,6 @@ const OwnerDashboard = () => {
     };
     fetchData();
   }, []);
-
-  if (loading) return <Loader />
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8 lg:space-y-8">
@@ -72,7 +68,7 @@ const OwnerDashboard = () => {
 
       <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-[0_15px_60px_rgba(0,0,0,0.10)] overflow-hidden">
 
-       
+
         <div className="relative h-64">
 
           <img
@@ -81,10 +77,10 @@ const OwnerDashboard = () => {
             className="w-full h-full object-cover"
           />
 
-    
+
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
 
-         
+
           <div className="absolute bottom-5 left-5 right-5 text-white">
 
             <h1 className="text-2xl sm:text-3xl font-extrabold leading-tight">
@@ -97,22 +93,22 @@ const OwnerDashboard = () => {
 
           </div>
 
-        
+
           <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-sm font-bold text-slate-800 shadow">
             ⭐ {Number(store.average_rating).toFixed(1)}
           </div>
 
         </div>
 
-   
+
         <div className="p-6 sm:p-8 space-y-6">
 
-         
+
           <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
             {store.description}
           </p>
 
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <div className="p-4 rounded-2xl bg-slate-50">
@@ -131,7 +127,7 @@ const OwnerDashboard = () => {
 
           </div>
 
-        
+
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 
             <div>

@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Icon from '../components/Icon'
 import api from '../../../configs/api';
 import toast from 'react-hot-toast';
-import Loader from '../../user/components/Loader';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setLoading } from '../../../app/features/authSlice';
 
 const UsersDataDashboard = () => {
@@ -55,7 +54,6 @@ const UsersDataDashboard = () => {
   const [conPassword, setConPassword] = useState("")
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const { loading } = useSelector(state => state.auth)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -110,7 +108,6 @@ const UsersDataDashboard = () => {
     return () => clearTimeout(delay);
   }, [search]);
 
-  if (loading) return <Loader />
 
   // add user
   const formUpdate = (e) => {
@@ -127,6 +124,13 @@ const UsersDataDashboard = () => {
       })
       toast.success(data.message)
       setIsAddOpen(false)
+      setForm({
+        name: "",
+        email: "",
+        password: "",
+        address: "",
+        role: "USER"
+      })
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message)
     }
@@ -176,6 +180,12 @@ const UsersDataDashboard = () => {
       })
       toast.success(data.message)
       setIsEditOpen(false)
+      setSelectedUser({
+        name: "",
+        email: "",
+        address: "",
+        role: ""
+      })
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message)
     }
@@ -189,7 +199,7 @@ const UsersDataDashboard = () => {
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8 lg:space-y-10">
 
-      
+
       <section className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900"

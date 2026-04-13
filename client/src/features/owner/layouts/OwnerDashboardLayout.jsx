@@ -3,9 +3,12 @@ import { useState } from "react";
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import { Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import Loader from '../../admin/components/Loader';
 
 const OwnerDashboardLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { loading } = useSelector(state => state.auth)
     return (
         <>
             <link
@@ -41,6 +44,7 @@ const OwnerDashboardLayout = () => {
                     <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
                     <main className="flex-1 overflow-y-auto pb-20 lg:pb-8">
+                        {loading && <Loader />}
                         <Outlet />
                     </main>
                 </div>

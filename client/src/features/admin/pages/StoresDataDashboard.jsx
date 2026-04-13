@@ -2,9 +2,8 @@ import Icon from '../components/Icon'
 import toast from 'react-hot-toast';
 import api from '../../../configs/api';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setLoading } from '../../../app/features/authSlice';
-import Loader from '../../user/components/Loader';
 
 const storesDataDashboard = () => {
     const token = localStorage.getItem('token')
@@ -22,7 +21,6 @@ const storesDataDashboard = () => {
     const [stores, setStores] = useState([])
     const [storePage, setStorePage] = useState(1);
     const [storeTotalPages, setStoreTotalPages] = useState(1);
-    const { loading } = useSelector(state => state.auth)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -50,7 +48,6 @@ const storesDataDashboard = () => {
         fetchData();
     }, [storePage, isAddStoreOpen]);
 
-    if (loading) return <Loader />
 
     const filteredstores = stores.filter((s) =>
         s.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -112,7 +109,7 @@ const storesDataDashboard = () => {
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900"
                         style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                        stores Management
+                        Stores Management
                     </h1>
                     <p className="text-slate-500 text-sm mt-1">
                         Manage all registered stores and their ratings

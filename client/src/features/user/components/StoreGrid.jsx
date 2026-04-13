@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import FilterChips from './FilterChips'
 import StoreCard from './StoreCard';
 import toast from 'react-hot-toast';
 import api from '../../../configs/api';

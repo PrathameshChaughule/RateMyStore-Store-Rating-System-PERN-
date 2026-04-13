@@ -4,7 +4,7 @@ import { useState } from 'react';
 import api from '../../../configs/api';
 import toast from 'react-hot-toast';
 import Icon from "../components/Icon"
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setLoading } from '../../../app/features/authSlice';
 import Loader from '../../user/components/Loader';
 
@@ -14,7 +14,6 @@ const UsersData = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [stats, setStats] = useState([]);
-    const { loading } = useSelector(state => state.auth)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -73,7 +72,7 @@ const UsersData = () => {
         fetchData();
     }, [page]);
 
-    if (loading) return <Loader />
+
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8 lg:space-y-10">

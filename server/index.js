@@ -9,10 +9,12 @@ import ownerRouter from './routes/ownerRoutes.js'
 const app = express()
 
 app.use(cors({
-    origin: "https://rate-my-store-weld.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}))
+  origin: [
+    "https://rate-my-store-weld.vercel.app",
+    "http://localhost:5173"
+  ],
+  credentials: true
+}));
 
 app.use(express.json())
 
