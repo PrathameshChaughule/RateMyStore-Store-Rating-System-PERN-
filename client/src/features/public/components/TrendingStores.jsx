@@ -4,10 +4,9 @@ import toast from 'react-hot-toast';
 import api from '../../../configs/api';
 import { setLoading } from '../../../app/features/authSlice';
 import { useDispatch, useSelector } from 'react-redux'
-import Loader from '../../user/components/Loader'
+import Loader from '../../admin/components/Loader'
 
 function TrendingStores() {
-    const [count, setCount] = useState(0)
     const IMAGES = {
         cafe: "https://lh3.googleusercontent.com/aida-public/AB6AXuA8NBVlbr-bqBgMMoWuPa4okt2TBNyaGRxUsX0SYDaTclnYuLfBnaxtDSYXbJTDYSITkFFYH_NSu6v7uyI9bwi6xhj2vNt0asmutun9KZNf7NPXX4opjJVTl1ASjgkZpMERcSrW8I7nkZQsDb6HfRvhgIPvBWJ4lmtoGBZucErqzUI6hcZt57ohOdPCk7z67aBbnJjOiRh5RMkY36W26vAauPXnhdNJLBJ7hb0n0KmIFJRjHxrJ9XLb6Imt_DMmoDNoklZBAlRSAK4",
         market: "https://lh3.googleusercontent.com/aida-public/AB6AXuDembC8WhSE9reMlkmtkSc239_gax8DEnQnoDqg5G77NVgW8duufyPYQQ_yVGPzvgNwGEDtAZ_OuNd8F0ONHwREHa5P_3YnP9p-7GcQL2HJxdF2y7j0PhMmDyAVhNd8iCu9y9mN_nclBKPstSMGuoYcyF3ldcdaYUSnfn6MBLvTBpPgU9MS_oitl0l5Zh-wTOzMupEPeJSAGrvPMz2tnmyjSx6vvzlTRyk8I67Sk5VQcEt5psM9lfRC39_xzHuhAjvcsUQyjc_2xVM",
@@ -31,8 +30,6 @@ function TrendingStores() {
         fetchData()
     }, [])
 
-    if (loading) return <Loader />
-
     return (
         <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto">
@@ -50,53 +47,8 @@ function TrendingStores() {
                             Trending Stores
                         </h2>
                     </div>
-                    {/* <div className="flex gap-3">
-                        <button
-                            onClick={() => setCount(prev => Math.max(prev - 1, 0))}
-                            disabled={count === 0}
-                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all border border-slate-300 text-slate-500 hover:border-sky-500 hover:text-sky-600 disabled:opacity-40"
-                        >
-                            <span className="material-symbols-outlined">west</span>
-                        </button>
-
-                        <button
-                            onClick={() =>
-                                setCount(prev => Math.min(prev + 1, stores.length - 3))
-                            }
-                            disabled={count >= stores.length - 3}
-                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all bg-sky-600 text-white shadow-lg shadow-sky-200 disabled:opacity-40"
-                        >
-                            <span className="material-symbols-outlined">east</span>
-                        </button>
-                    </div> */}
                 </div>
-
-                {/* <div className="relative overflow-hidden">
-
-                    <div
-                        className="flex transition-transform duration-500 ease-in-out"
-                        style={{
-                            transform: `translateX(-${count * (100 / 3)}%)`,
-                        }}
-                    >
-                        {stores.map((store) => (
-                            <div
-                                key={store.name}
-                                className="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-3"
-                            >
-                                <div className="transition-transform duration-300 hover:scale-105">
-                                    <StoreCard {...store} />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-white to-transparent z-10" />
-
-                    <div className="absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10" />
-
-                </div> */}
-
+                {loading && <Loader />}
                 <div className="carousel carousel-center rounded-box gap-5 w-full">
                     {stores.map((store) => (
                         <div className="carousel-item">
